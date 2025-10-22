@@ -14,12 +14,10 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 interface Expense {
   id: string;
   amount: number;
-  currency: string;
   date: string;
   category: string | null;
-  vendor: string | null;
-  description: string | null;
-  ai_confidence: number | null;
+  subcategory: string | null;
+  user_id: string;
 }
 
 export default function Dashboard() {
@@ -49,8 +47,7 @@ export default function Dashboard() {
         .from("expenses")
         .select("*")
         .eq("user_id", user.id)
-        .order("date", { ascending: false })
-        .order("created_at", { ascending: false });
+        .order("date", { ascending: false });
 
       if (timeRange !== "all") {
         const daysAgo = subDays(new Date(), parseInt(timeRange));
@@ -240,8 +237,7 @@ export default function Dashboard() {
                   <TableHead>Date</TableHead>
                   <TableHead>Amount</TableHead>
                   <TableHead>Category</TableHead>
-                  <TableHead>Vendor</TableHead>
-                  <TableHead>Description</TableHead>
+                  <TableHead>Subcategory</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -250,7 +246,7 @@ export default function Dashboard() {
                   <TableRow key={expense.id}>
                     <TableCell>{format(new Date(expense.date), "MMM dd, yyyy")}</TableCell>
                     <TableCell className="font-semibold">
-                      {expense.currency} {Number(expense.amount).toFixed(2)}
+                      ₹{Number(expense.amount).toFixed(2)}
                     </TableCell>
                     <TableCell>
                       {expense.category ? (
@@ -259,8 +255,13 @@ export default function Dashboard() {
                         <span className="text-muted-foreground">-</span>
                       )}
                     </TableCell>
-                    <TableCell>{expense.vendor || "-"}</TableCell>
-                    <TableCell className="max-w-xs truncate">{expense.description || "-"}</TableCell>
+                    <TableCell>
+                      {expense.subcategory ? (
+                        <Badge variant="outline">{expense.subcategory}</Badge>
+                      ) : (
+                        <span className="text-muted-foreground">-</span>
+                      )}
+                    </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
                         <Button size="icon" variant="ghost" disabled>
