@@ -16,72 +16,61 @@ export type Database = {
     Tables: {
       expenses: {
         Row: {
-          ai_confidence: number | null
           amount: number
           category: string | null
-          created_at: string
-          currency: string
           date: string
-          description: string | null
           id: string
           subcategory: string | null
-          updated_at: string
           user_id: string
-          vendor: string | null
         }
         Insert: {
-          ai_confidence?: number | null
           amount: number
           category?: string | null
-          created_at?: string
-          currency?: string
-          date?: string
-          description?: string | null
+          date: string
           id?: string
           subcategory?: string | null
-          updated_at?: string
           user_id: string
-          vendor?: string | null
         }
         Update: {
-          ai_confidence?: number | null
           amount?: number
           category?: string | null
-          created_at?: string
-          currency?: string
           date?: string
-          description?: string | null
           id?: string
           subcategory?: string | null
-          updated_at?: string
           user_id?: string
-          vendor?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "expenses_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
-      profiles: {
+      webhook_events: {
         Row: {
-          created_at: string
-          display_name: string | null
+          error: string | null
           id: string
+          parsed: Json | null
+          raw_payload: Json | null
+          received_at: string | null
+          source: string | null
+          status: string | null
+          user_id: string | null
         }
         Insert: {
-          created_at?: string
-          display_name?: string | null
-          id: string
+          error?: string | null
+          id?: string
+          parsed?: Json | null
+          raw_payload?: Json | null
+          received_at?: string | null
+          source?: string | null
+          status?: string | null
+          user_id?: string | null
         }
         Update: {
-          created_at?: string
-          display_name?: string | null
+          error?: string | null
           id?: string
+          parsed?: Json | null
+          raw_payload?: Json | null
+          received_at?: string | null
+          source?: string | null
+          status?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
