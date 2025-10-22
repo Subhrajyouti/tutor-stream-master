@@ -195,40 +195,43 @@ export default function AddExpense() {
   };
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Add Expense</h1>
+    <div className="p-4 md:p-6 max-w-2xl mx-auto min-h-screen">
+      <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6">Add Expense</h1>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Quick Entry</CardTitle>
-          <CardDescription>
+        <CardHeader className="p-4 md:p-6">
+          <CardTitle className="text-lg md:text-xl">Quick Entry</CardTitle>
+          <CardDescription className="text-sm">
             Type or say "coffee 120" or "rent 12000 Oct 2025"
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 p-4 md:p-6">
           <div className="flex gap-2">
             <Input
-              placeholder='Type or say "coffee 120" or "rent 12000 Oct 2025"'
+              placeholder='e.g., "coffee 120"'
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
               disabled={isProcessing}
+              className="h-11 md:h-10 text-base"
             />
             <Button
               size="icon"
               variant={isRecording ? "destructive" : "outline"}
               onClick={isRecording ? handleStopRecording : handleStartRecording}
               disabled={isProcessing}
-              title="Click to record. Recording stops automatically after silence."
+              title="Click to record"
+              className="h-11 w-11 md:h-10 md:w-10 flex-shrink-0"
             >
-              <Mic className={isRecording ? "animate-pulse" : ""} />
+              <Mic className={isRecording ? "animate-pulse h-5 w-5" : "h-5 w-5"} />
             </Button>
             <Button
               size="icon"
               onClick={handleSendMessage}
               disabled={!message.trim() || isProcessing}
+              className="h-11 w-11 md:h-10 md:w-10 flex-shrink-0"
             >
-              <Send />
+              <Send className="h-5 w-5" />
             </Button>
           </div>
 
@@ -242,53 +245,58 @@ export default function AddExpense() {
 
           {parsedData?.parsed && (
             <Card className="border-primary">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">Review Expense</CardTitle>
+              <CardHeader className="p-4">
+                <div className="flex items-start justify-between gap-2">
+                  <CardTitle className="text-base md:text-lg">Review Expense</CardTitle>
                   {parsedData.ai_confidence !== undefined && (
-                    <Badge variant={parsedData.ai_confidence < 0.7 ? "destructive" : "default"}>
-                      Confidence: {(parsedData.ai_confidence * 100).toFixed(0)}%
+                    <Badge variant={parsedData.ai_confidence < 0.7 ? "destructive" : "default"} className="text-xs flex-shrink-0">
+                      {(parsedData.ai_confidence * 100).toFixed(0)}%
                     </Badge>
                   )}
                 </div>
                 {parsedData.ai_confidence !== undefined && parsedData.ai_confidence < 0.7 && (
-                  <p className="text-sm text-destructive">
-                    Low confidence — please confirm or edit before saving.
+                  <p className="text-xs md:text-sm text-destructive mt-2">
+                    Low confidence — please confirm before saving.
                   </p>
                 )}
               </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div>
-                    <span className="font-semibold">Amount:</span> {parsedData.parsed.amount} {parsedData.parsed.currency || "INR"}
+              <CardContent className="space-y-3 p-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                  <div className="bg-muted/50 p-3 rounded-lg">
+                    <span className="text-xs text-muted-foreground block mb-1">Amount</span>
+                    <span className="font-semibold text-base">{parsedData.parsed.amount} {parsedData.parsed.currency || "INR"}</span>
                   </div>
-                  <div>
-                    <span className="font-semibold">Date:</span> {parsedData.parsed.date || "Today"}
+                  <div className="bg-muted/50 p-3 rounded-lg">
+                    <span className="text-xs text-muted-foreground block mb-1">Date</span>
+                    <span className="font-semibold">{parsedData.parsed.date || "Today"}</span>
                   </div>
                   {parsedData.parsed.category && (
-                    <div>
-                      <span className="font-semibold">Category:</span> {parsedData.parsed.category}
+                    <div className="bg-muted/50 p-3 rounded-lg">
+                      <span className="text-xs text-muted-foreground block mb-1">Category</span>
+                      <span className="font-semibold">{parsedData.parsed.category}</span>
                     </div>
                   )}
                   {parsedData.parsed.vendor && (
-                    <div>
-                      <span className="font-semibold">Vendor:</span> {parsedData.parsed.vendor}
+                    <div className="bg-muted/50 p-3 rounded-lg">
+                      <span className="text-xs text-muted-foreground block mb-1">Vendor</span>
+                      <span className="font-semibold">{parsedData.parsed.vendor}</span>
                     </div>
                   )}
                   {parsedData.parsed.description && (
-                    <div className="col-span-2">
-                      <span className="font-semibold">Description:</span> {parsedData.parsed.description}
+                    <div className="bg-muted/50 p-3 rounded-lg col-span-1 sm:col-span-2">
+                      <span className="text-xs text-muted-foreground block mb-1">Description</span>
+                      <span className="font-semibold">{parsedData.parsed.description}</span>
                     </div>
                   )}
                 </div>
-                <div className="flex gap-2 pt-4">
-                  <Button onClick={handleSave} className="flex-1">
+                <div className="flex flex-col sm:flex-row gap-2 pt-2">
+                  <Button onClick={handleSave} className="flex-1 h-11 md:h-10">
                     <CheckCircle2 className="mr-2 h-4 w-4" />
-                    Save to My Expenses
+                    <span className="text-sm md:text-base">Save Expense</span>
                   </Button>
-                  <Button variant="outline" onClick={handleDiscard}>
+                  <Button variant="outline" onClick={handleDiscard} className="h-11 md:h-10 sm:w-auto">
                     <X className="mr-2 h-4 w-4" />
-                    Discard
+                    <span className="text-sm md:text-base">Discard</span>
                   </Button>
                 </div>
               </CardContent>
