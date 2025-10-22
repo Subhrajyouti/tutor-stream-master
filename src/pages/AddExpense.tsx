@@ -45,24 +45,32 @@ export default function AddExpense() {
     checkAuth();
   }, [navigate]);
 
-  const sendToWebhook = async (text: string) => {
+  const sendToWebhook = async (text?: string, audioData?: string) => {
     setIsProcessing(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
+
+      const payload: any = {
+        user_id: user.id,
+        source: "bolt",
+        device: "web",
+        meta: { timezone: "Asia/Kolkata" },
+      };
+
+      if (audioData) {
+        payload.audio = audioData;
+        payload.audio_format = "webm";
+      } else if (text) {
+        payload.text = text;
+      }
 
       const response = await fetch("https://n8n.subhrajyoti.online/webhook/poisar-hisap", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          text,
-          user_id: user.id,
-          source: "bolt",
-          device: "web",
-          meta: { timezone: "Asia/Kolkata" },
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -113,12 +121,7 @@ export default function AddExpense() {
         reader.onloadend = async () => {
           const base64Audio = reader.result?.toString().split(",")[1];
           if (base64Audio) {
-            // Here you would send to a voice-to-text service
-            // For now, we'll just show a message
-            toast({
-              title: "Voice recording",
-              description: "Voice transcription not yet implemented. Please use text input.",
-            });
+            await sendToWebhook(undefined, base64Audio);
           }
         };
         stream.getTracks().forEach((track) => track.stop());
