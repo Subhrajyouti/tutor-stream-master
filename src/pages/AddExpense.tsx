@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Mic, Send, X, CheckCircle2 } from "lucide-react";
+import { Mic, Send, X, CheckCircle2, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface ParsedExpense {
@@ -216,6 +216,7 @@ export default function AddExpense() {
               onClick={isRecording ? handleStopRecording : handleStartRecording}
               disabled={isProcessing}
               title="Click to record. Recording stops automatically after silence."
+              className={isRecording ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" : ""}
             >
               <Mic className={isRecording ? "animate-pulse" : ""} />
             </Button>
@@ -223,9 +224,13 @@ export default function AddExpense() {
               size="icon"
               onClick={handleSendMessage}
               disabled={!message.trim() || isProcessing}
-              className={isProcessing ? "animate-pulse" : ""}
+              className={isProcessing ? "rounded-full" : ""}
             >
-              <Send className={isProcessing ? "animate-spin" : ""} />
+              {isProcessing ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                <Send />
+              )}
             </Button>
           </div>
 
