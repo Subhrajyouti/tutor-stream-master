@@ -79,18 +79,8 @@ export default function AddExpense() {
         throw new Error("Failed to process expense");
       }
 
-      const data = await response.json();
-      
-      // Display the response text
-      if (typeof data === 'string') {
-        setResponseText(data);
-      } else if (data.message) {
-        setResponseText(data.message);
-      } else if (data.text) {
-        setResponseText(data.text);
-      } else {
-        setResponseText(JSON.stringify(data));
-      }
+      const data = await response.text();
+      setResponseText(data);
 
     } catch (error) {
       toast({
@@ -106,6 +96,7 @@ export default function AddExpense() {
   const handleSendMessage = async () => {
     if (!message.trim()) return;
     await sendToWebhook(message);
+    setMessage("");
   };
 
   const handleStartRecording = async () => {
