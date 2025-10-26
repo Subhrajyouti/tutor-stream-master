@@ -32,6 +32,7 @@ export default function AddExpense() {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [parsedData, setParsedData] = useState<WebhookResponse | null>(null);
+  const [responseText, setResponseText] = useState("");
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
 
@@ -47,6 +48,7 @@ export default function AddExpense() {
 
   const sendToWebhook = async (text?: string, audioData?: string) => {
     setIsProcessing(true);
+    setResponseText("");
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
@@ -77,16 +79,19 @@ export default function AddExpense() {
         throw new Error("Failed to process expense");
       }
 
-      const data: WebhookResponse = await response.json();
-      setParsedData(data);
-
-      if (data.ai_confidence && data.ai_confidence < 0.7) {
-        toast({
-          title: "Low confidence",
-          description: "Please review and confirm the parsed data before saving.",
-          variant: "default",
-        });
+      const data = await response.json();
+      
+      // Display the response text
+      if (typeof data === 'string') {
+        setResponseText(data);
+      } else if (data.message) {
+        setResponseText(data.message);
+      } else if (data.text) {
+        setResponseText(data.text);
+      } else {
+        setResponseText(JSON.stringify(data));
       }
+
     } catch (error) {
       toast({
         variant: "destructive",
@@ -227,8 +232,9 @@ export default function AddExpense() {
               size="icon"
               onClick={handleSendMessage}
               disabled={!message.trim() || isProcessing}
+              className={isProcessing ? "animate-pulse" : ""}
             >
-              <Send />
+              <Send className={isProcessing ? "animate-spin" : ""} />
             </Button>
           </div>
 
@@ -236,8 +242,12 @@ export default function AddExpense() {
             <p className="text-sm text-muted-foreground">Recording... Click mic to stop</p>
           )}
 
-          {isProcessing && (
-            <p className="text-sm text-muted-foreground">Processing...</p>
+          {responseText && (
+            <Card className="border-primary bg-primary/5">
+              <CardContent className="pt-6">
+                <p className="text-sm whitespace-pre-wrap">{responseText}</p>
+              </CardContent>
+            </Card>
           )}
 
           {parsedData?.parsed && (
